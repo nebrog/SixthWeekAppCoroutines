@@ -9,6 +9,7 @@ import com.example.sixthweekappcoroutines.Background.Companion.colors
 import com.example.sixthweekappcoroutines.Callbacks
 import kotlinx.coroutines.*
 import java.util.*
+import kotlin.system.measureTimeMillis
 
 class CoroutineWorker(private val uiCallback: Callbacks) : Background {
 
@@ -47,7 +48,12 @@ class CoroutineWorker(private val uiCallback: Callbacks) : Background {
                 }
                 delay(TIME_TIMEOUT)
                 timeMillis += TIME_TIMEOUT
-                uiCallback.onTimeChanged(timeMillis)
+                if (!isPaused) {
+                    val measure = measureTimeMillis {
+                        uiCallback.onTimeChanged(timeMillis)
+                    }
+                    timeMillis += measure
+                }
             }
         }
     }

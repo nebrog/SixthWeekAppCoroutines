@@ -43,11 +43,11 @@ class MainActivity : AppCompatActivity(), Callbacks {
 
     override suspend fun onTimeChanged(timeMs: Long) {
         withContext(Dispatchers.Main) {
+            val millis = timeMs % 1000
             val minutes = timeMs / 1000 / 60
             val seconds = timeMs / 1000 % 60
-            timeText.text = "${minutes.zeroPadding()}:${seconds.zeroPadding()}"
+            timeText.text = "${"%02d".format(minutes)}:${"%02d".format(seconds)}:${"%03d".format(millis)}"
         }
-
     }
 
     override suspend fun onColorChanged(color: Int) {
@@ -56,6 +56,4 @@ class MainActivity : AppCompatActivity(), Callbacks {
         }
 
     }
-
-    private fun Long.zeroPadding(): String = "%02d".format(this)
 }
