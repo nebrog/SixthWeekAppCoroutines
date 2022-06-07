@@ -1,6 +1,7 @@
 package com.example.sixthweekappcoroutines.domain
 
 import android.graphics.Color
+import android.util.Log
 import com.example.sixthweekappcoroutines.Background
 import com.example.sixthweekappcoroutines.Background.Companion.COLOR_TIMEOUT
 import com.example.sixthweekappcoroutines.Background.Companion.TIME_SLEEP_PAUSE
@@ -18,10 +19,16 @@ class CoroutineWorker(private val uiCallback: Callbacks) : Background {
     @Volatile
     private var isPaused = false
     private val random = Random(System.currentTimeMillis())
+
     @Volatile
     private var sleepTime = 0L
+
     @Volatile
     private var timeMillis = 0L
+
+    @Volatile
+    private var n = 1
+
 
     override fun create() {
 
@@ -52,8 +59,21 @@ class CoroutineWorker(private val uiCallback: Callbacks) : Background {
                     val measure = measureTimeMillis {
                         uiCallback.onTimeChanged(timeMillis)
                     }
+                    Log.e("Nebrog", measure.toString())
                     timeMillis += measure
                 }
+            }
+        }
+        scope.launch(Dispatchers.Default) {
+            while (true) {
+                while (isPaused) {
+                    delay(TIME_SLEEP_PAUSE)
+                }
+                val piNumber = GenerationPI.formula(n)
+                val piString = "%.${2 * n}f".format(piNumber)
+                val pi = piString.subSequence(0, n + 2)
+                uiCallback.onPiChanged(pi)
+                n++
             }
         }
     }
@@ -75,6 +95,7 @@ class CoroutineWorker(private val uiCallback: Callbacks) : Background {
         sleepTime = 0
         timeMillis = 0
         isPaused = false
+        n = 1
         scope.launch { uiCallback.onColorChanged(Color.WHITE) }
 
     }
